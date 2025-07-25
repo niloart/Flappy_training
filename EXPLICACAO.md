@@ -63,3 +63,41 @@ O processo se repete a cada geração, formando um ciclo de evolução:
 5.  **Repetição**: A nova geração, que é sutilmente diferente e potencialmente melhor que a anterior, inicia a simulação novamente.
 
 Ao longo de centenas de gerações, esse processo de seleção e mutação gradualmente "esculpe" as redes neurais, resultando em pássaros que são especialistas em desviar dos canos.
+
+---
+
+## Perguntas e Respostas sobre a Implementação
+
+Aqui estão as respostas diretas para as perguntas comuns sobre o design deste Algoritmo Genético:
+
+#### O que você está otimizando?
+
+Estamos otimizando a **estratégia de jogo** de um agente (o pássaro). O objetivo final é encontrar a configuração ideal para a rede neural do pássaro, permitindo que ele desvie dos canos de forma eficiente e, consequentemente, sobreviva o maior tempo possível.
+
+#### Qual é a variável que quer maximizar ou minimizar?
+
+A variável principal a ser **maximizada** é a **pontuação (score)** de cada pássaro, que é diretamente proporcional ao seu tempo de sobrevivência em frames. Secundariamente, ao ativar a opção "Fitness Aprimorado", também buscamos maximizar o **número de canos ultrapassados**, o que incentiva um comportamento mais proativo e menos passivo.
+
+#### Qual é a representação da solução (genoma)?
+
+A representação da solução, ou o **genoma** de cada pássaro, é o conjunto de todos os **pesos sinápticos** de sua rede neural. Estes pesos são armazenados em duas matrizes NumPy: `weights_ih` (pesos da camada de entrada para a camada oculta) e `weights_ho` (pesos da camada oculta para a camada de saída).
+
+#### Qual é a função de fitness?
+
+A função de fitness quantifica o sucesso de cada pássaro. O `score` (frames sobrevividos) é elevado ao quadrado para dar mais ênfase aos melhores desempenhos. O fitness final é este valor normalizado pela soma dos scores ao quadrado de toda a população. A fórmula é: `fitness = (score²) / Σ(todos_os_scores²)`.
+
+#### Qual é o método de seleção?
+
+O método de seleção utilizado é a **Seleção por Roleta (Roulette Wheel Selection)**. Cada indivíduo da população ocupa um espaço na "roleta" proporcional ao seu valor de fitness. Isso significa que indivíduos mais aptos têm uma probabilidade maior de serem selecionados para a reprodução, mas não é uma garantia, o que ajuda a manter a diversidade genética.
+
+#### Qual método de crossover você vai implementar?
+
+Nesta implementação, **não há um método de crossover** (reprodução sexuada). A reprodução é assexuada: um único "pai" é selecionado, e seu genoma (os pesos da rede neural) é clonado para criar um "filho". A diversidade genética na nova geração é introduzida exclusivamente através do processo de **mutação**.
+
+#### Qual será o método de inicialização?
+
+O método de inicialização é a **criação de uma população com genomas aleatórios**. Para cada pássaro na primeira geração, as matrizes de pesos de sua rede neural são preenchidas com valores aleatórios uniformemente distribuídos no intervalo [-1, 1].
+
+#### Qual o critério de parada?
+
+O treinamento **não possui um critério de parada automático**. Ele é projetado para rodar indefinidamente, geração após geração, permitindo que o usuário observe a evolução. O critério de parada é **manual**: o usuário decide quando a IA atingiu um nível de desempenho satisfatório e pode então salvar o melhor cérebro (tecla `S`) ou simplesmente fechar o programa (tecla `ESC`).
