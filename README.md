@@ -1,110 +1,103 @@
-# Flappy Bird AI - Versão Python
+# Flappy Bird com Evolução de IA
 
-Este projeto é uma conversão do jogo Flappy Bird com IA treinada por algoritmos genéticos, originalmente em HTML/JavaScript, agora implementado em Python usando Pygame.
+Este projeto é uma implementação do clássico jogo Flappy Bird, com um foco especial em treinar uma Inteligência Artificial (IA) para jogar o jogo de forma autônoma usando um algoritmo genético e redes neurais. Além do modo de treinamento, é possível competir contra a melhor IA já treinada.
 
-## 🚀 Instalação
+## Funcionalidades
 
-1. **Instale as dependências:**
+- **Modo de Treinamento de IA**: Assista a uma população de pássaros evoluir a cada geração para se tornarem melhores em desviar dos canos.
+- **Modo Jogador vs. IA**: Jogue contra a melhor IA que você treinou e salvou.
+- **Algoritmo Genético Avançado**:
+  - **Elitismo**: Preserva os melhores indivíduos da geração anterior, garantindo que o progresso não seja perdido.
+  - **Mutação Adaptativa**: A taxa de mutação se ajusta dinamicamente. Se a população estagnar, a mutação aumenta para explorar novas soluções. Se houver progresso, ela diminui para refinar as soluções existentes.
+  - **Fitness Aprimorado**: O cálculo de "quão bom" um pássaro é não se baseia apenas na distância percorrida, mas também recompensa cada cano ultrapassado.
+- **Controles Interativos**: Ajuste parâmetros como tamanho da população, taxa de mutação e velocidade da simulação em tempo real.
+- **Visualização Clara**: Uma interface gráfica mostra estatísticas detalhadas, controles e o status do treinamento ou do jogo.
 
-```bash
-pip install -r requirements.txt
-```
+## Como Funciona
 
-2. **Execute o jogo:**
+O núcleo da IA é a combinação de uma **Rede Neural** com um **Algoritmo Genético**.
 
-```bash
-python flappy_bird_ai.py
-```
+### 1. Rede Neural
 
-## 🎮 Como Jogar
+Cada pássaro possui seu próprio "cérebro", que é uma rede neural simples. A rede recebe 5 informações (entradas) sobre o ambiente:
 
-### Controles:
+1.  **Posição Y do pássaro**: A altura do pássaro na tela.
+2.  **Velocidade vertical do pássaro**: Se está subindo ou descendo e com que rapidez.
+3.  **Posição X do próximo cano**: A distância horizontal até o próximo obstáculo.
+4.  **Altura do topo do próximo cano**: A posição do obstáculo superior.
+5.  **Altura da base do próximo cano**: A posição do obstáculo inferior.
 
-- **ESPAÇO** - Fazer o pássaro voar / Iniciar jogo
-- **T** - Modo de treinamento da IA
-- **P** - Jogar contra IA salva (se existir)
-- **S** - Salvar a melhor IA atual
-- **1/2** - Diminuir/Aumentar velocidade da simulação
-- **Mouse** - Clique para interagir
+Com base nessas entradas, a rede neural calcula uma única saída: a decisão de pular (`flap`) ou não.
 
-### Modos de Jogo:
+### 2. Algoritmo Genético
 
-#### 🧠 Modo Treinamento:
+O treinamento ocorre através de um processo de seleção natural simulado, geração após geração:
 
-- 50 pássaros são criados com cérebros aleatórios
-- A cada geração, os melhores são selecionados para reprodução
-- Use as teclas 1/2 para acelerar o treinamento
-- Pressione S para salvar a melhor IA
+1.  **População Inicial**: O jogo começa com uma população de pássaros (`50` por padrão), cada um com uma rede neural aleatória.
+2.  **Avaliação (Fitness)**: Todos os pássaros jogam simultaneamente. A "pontuação de fitness" de cada um é calculada com base em quão longe eles chegaram.
+3.  **Seleção**: Quando todos os pássaros morrem, o algoritmo seleciona os "pais" da próxima geração. Pássaros com maior pontuação de fitness têm mais chances de serem escolhidos.
+4.  **Reprodução e Mutação**: Uma nova população é criada a partir dos cérebros dos pais selecionados. Cada cérebro copiado passa por um processo de **mutação**, onde pequenos ajustes aleatórios são feitos em seus pesos. É essa mutação que permite que novas "estratégias" de voo surjam.
+5.  **Repetição**: O ciclo recomeça com a nova geração. Ao longo de centenas de gerações, os pássaros evoluem para se tornarem especialistas em desviar dos canos.
 
-#### 🎯 Modo Jogador vs IA:
+## Como Executar
 
-- Compete contra a melhor IA treinada
-- Use ESPAÇO para controlar seu pássaro
-- Veja quem consegue o melhor score!
+### Pré-requisitos
 
-## 📁 Estrutura do Projeto
+- Python 3.x
+- `pip` (gerenciador de pacotes do Python)
 
-- `flappy_bird_ai.py` - Arquivo principal do jogo
-- `neural_network.py` - Implementação da rede neural
-- `bird.py` - Classe do pássaro
-- `requirements.txt` - Dependências do projeto
-- `best_flappy_brain.pkl` - IA salva (criado automaticamente)
+### Passos
 
-## 🧠 Como Funciona a IA
+1.  **Clone o repositório:**
 
-### Rede Neural:
+    ```bash
+    git clone https://github.com/niloart/Flappy_training.git
+    cd Flappy_training
+    ```
 
-- **5 entradas**: posição Y, velocidade, posição X do cano, altura do cano superior/inferior
-- **8 neurônios ocultos**: processamento
-- **1 saída**: decisão de voar ou não
+2.  **Instale as dependências:**
+    O projeto utiliza `pygame` e `numpy`. Instale-os a partir do arquivo `requirements.txt`.
 
-### Algoritmo Genético:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-- **População**: 50 pássaros por geração
-- **Seleção**: Baseada no fitness (score²)
-- **Mutação**: 5% de chance de alterar pesos
-- **Evolução**: Melhores pássaros geram próxima geração
+3.  **Execute o jogo:**
+    ```bash
+    python flappy_bird_ai.py
+    ```
 
-## 🔧 Diferenças da Versão HTML
+## Controles
 
-### Vantagens do Python:
+A interface exibe a maioria dos controles, mas aqui está uma lista completa:
 
-- ✅ **Melhor Performance**: NumPy para cálculos matemáticos
-- ✅ **Persistência**: Salvar/carregar IA em arquivo
-- ✅ **Modularidade**: Código bem organizado em classes
-- ✅ **Extensibilidade**: Fácil de adicionar novas funcionalidades
-- ✅ **Controle de Transparência**: Melhor visualização da população
+### Controles Gerais
 
-### Funcionalidades Equivalentes:
+- **ESC**: Fecha o jogo.
+- **T**: Inicia o modo de **Treinamento de IA**.
+- **P**: Inicia o modo **Jogador vs. IA** (requer um arquivo `best_flappy_brain.pkl` salvo).
+- **ESPAÇO**: Inicia o jogo (na tela inicial) ou faz o pássaro do jogador pular (no modo de jogo).
 
-- ✅ **Treinamento de IA** com algoritmos genéticos
-- ✅ **Modo competitivo** jogador vs IA
-- ✅ **Controle de velocidade** da simulação
-- ✅ **Interface visual** similar
-- ✅ **Estatísticas** em tempo real
+### Controles do Modo de Treinamento
 
-## 📊 Estatísticas Exibidas
+- **S**: Salva o cérebro do melhor pássaro da população atual no arquivo `best_flappy_brain.pkl`.
+- **R**: Reinicia o treinamento do zero (nova Geração 1).
+- **D**: Alterna entre desenhar todos os pássaros ou apenas o melhor da geração atual.
+- **1 / 2**: Diminui / Aumenta a velocidade da simulação.
 
-- **Modo Treinamento**: Melhor Score, Geração, Pássaros Vivos
-- **Modo Jogador**: Score do Jogador vs Score da IA
-- **Velocidade**: Multiplicador da simulação
+### Ajustes do Algoritmo Genético (em tempo real)
 
-## 🎨 Personalização
+- **F**: Ativa/Desativa o **Fitness Aprimorado**.
+- **E**: Ativa/Desativa o **Elitismo**.
+- **A**: Ativa/Desativa a **Mutação Adaptativa**.
+- **SETA PARA CIMA / BAIXO**: Aumenta / Diminui o tamanho da população.
+- **SETA PARA DIREITA / ESQUERDA**: Aumenta / Diminui a taxa de mutação base.
 
-Você pode facilmente modificar:
+## Estrutura dos Arquivos
 
-- **Cores** das diferentes entidades
-- **Tamanho da população** (POPULATION_SIZE)
-- **Taxa de mutação** (MUTATION_RATE)
-- **Arquitetura da rede neural** (camadas e neurônios)
-- **Física do jogo** (gravidade, força do pulo, etc.)
-
-## 🛠️ Requisitos Técnicas
-
-- **Python 3.7+**
-- **Pygame 2.0+**
-- **NumPy 1.20+**
-- **4GB RAM** (recomendado)
-- **Placa gráfica** básica para renderização
-
-Divirta-se treinando sua própria IA! 🐦🤖
+- **`flappy_bird_ai.py`**: O arquivo principal que contém a lógica do jogo, a interface gráfica, o loop de eventos e a implementação do algoritmo genético.
+- **`bird.py`**: Define a classe `Bird`, que representa um único pássaro (seja IA ou jogador). Contém sua física, estado e a lógica para interagir com sua rede neural.
+- **`neural_network.py`**: Define a classe `NeuralNetwork`. É o "cérebro" de cada pássaro, responsável por tomar a decisão de pular.
+- **`requirements.txt`**: Lista as bibliotecas Python necessárias para rodar o projeto.
+- **`best_flappy_brain.pkl`**: Arquivo gerado quando você salva a melhor IA. Ele armazena o estado da rede neural do melhor pássaro.
+- **`README.md`**: Este arquivo.
