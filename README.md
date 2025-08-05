@@ -102,9 +102,11 @@ A interface exibe a maioria dos controles, mas aqui está uma lista completa:
 - **`best_flappy_brain.pkl`**: Arquivo gerado quando você salva a melhor IA. Ele armazena o estado da rede neural do melhor pássaro.
 - **`README.md`**: Este arquivo.
 
-## Sobre o Projeto
+## Mais Sobre o Projeto
 
-- Projeto de estudos da PosTech FIAP
+- Esse projeto faz parte dos de estudos da PosTech FIAP
+- Curso: IA Para DEVS
+- Tech Challenge Fase 2
 
 ### Integrantes do Grupo
 
