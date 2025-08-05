@@ -1,8 +1,11 @@
+import io
 import pygame
 import random
 import os
 from bird import Bird
 from neural_network import NeuralNetwork
+import matplotlib.pyplot as plt
+import numpy as np
 
 # --- Configurações e Constantes ---
 
@@ -10,7 +13,7 @@ class Config:
     """Agrupa todas as configurações do jogo e da IA."""
     GAME_WIDTH = 400
     GAME_HEIGHT = 600
-    UI_PANEL_WIDTH = 300
+    UI_PANEL_WIDTH = 400
     CANVAS_WIDTH = GAME_WIDTH + UI_PANEL_WIDTH
     CANVAS_HEIGHT = GAME_HEIGHT + 100 # Inclui painel inferior
 
@@ -59,6 +62,7 @@ class FlappyBirdAI:
         self._init_fonts()
         self._init_game_state()
         self._init_ui_rects()
+        self.evolution_graph_surface = None
 
     def _init_fonts(self):
         """Inicializa as fontes usadas no jogo."""
@@ -84,6 +88,7 @@ class FlappyBirdAI:
         self.simulation_speed = 1
         self.draw_all_birds = True
         self.clock = pygame.time.Clock()
+        self.generation_scores = []
         
         # Melhorias do algoritmo genético
         self.ga_enhancements = {
@@ -210,6 +215,11 @@ class FlappyBirdAI:
         
         self.saved_birds.sort(key=lambda b: b.fitness, reverse=True)
         
+        # Salva o melhor score da geração para o gráfico
+        if self.saved_birds:
+            best_score_in_gen = max(bird.score for bird in self.saved_birds)
+            self.generation_scores.append(best_score_in_gen)
+        
         self.active_birds = []
         
         # Elitismo
@@ -301,11 +311,45 @@ class FlappyBirdAI:
         return max(population, key=lambda b: b.score) if population else None
 
     def save_best_ai(self):
-        """Salva o cérebro do melhor pássaro em um arquivo."""
+        """Salva o cérebro do melhor pássaro e o gráfico de evolução."""
         best_bird = self.find_best_bird()
         if best_bird:
             best_bird.brain.save(self.config.SAVE_FILE)
             print(f"Melhor IA salva em '{self.config.SAVE_FILE}'!")
+        
+        self.save_evolution_graph()
+
+    def save_evolution_graph(self):
+        """Gera e salva um gráfico de alta qualidade da evolução dos scores."""
+        if not self.generation_scores or len(self.generation_scores) < 2:
+            print("Dados insuficientes para gerar o gráfico de evolução.")
+            return
+
+        plt.figure(figsize=(12, 6))
+        
+        generations = range(1, len(self.generation_scores) + 1)
+        scores = self.generation_scores
+        
+        plt.plot(generations, scores, marker='o', linestyle='-', label='Melhor Score da Geração')
+        
+        # Linha de tendência
+        x = np.array(generations)
+        y = np.array(scores)
+        z = np.polyfit(x, y, 1)
+        p = np.poly1d(z)
+        plt.plot(x, p(x), "r--", label=f'Linha de Tendência (y={z[0]:.2f}x + {z[1]:.2f})')
+
+        plt.title('Evolução do Score Máximo por Geração')
+        plt.xlabel('Geração')
+        plt.ylabel('Score Máximo')
+        plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+        plt.legend()
+        plt.tight_layout()
+        
+        filename = "evolucao_scores.png"
+        plt.savefig(filename)
+        print(f"Gráfico de evolução salvo como '{filename}'")
+        plt.close()
 
     # --- Lógica de Atualização do Jogo ---
 
@@ -436,13 +480,48 @@ class FlappyBirdAI:
         title_text = self.fonts['medium'].render("FLAPPY BIRD AI", True, self.colors.WHITE)
         self.screen.blit(title_text, (self.config.GAME_WIDTH + 10, 10))
         
-        self._draw_stats_on_panel()
+        stats_y_end = self._draw_stats_on_panel()
+
+        # Desenha o gráfico de evolução se ele existir
+        if self.game_state == GameState.TRAINING:
+            self._draw_evolution_graph(stats_y_end + 20)
 
         # Painel inferior
         pygame.draw.rect(self.screen, self.colors.DARK_GRAY, self.bottom_panel_rect)
         pygame.draw.line(self.screen, self.colors.WHITE, (0, self.config.GAME_HEIGHT), (self.config.GAME_WIDTH, self.config.GAME_HEIGHT), 2)
         
         self._draw_bottom_panel_info()
+
+    def _draw_evolution_graph(self, start_y):
+        """Desenha o gráfico de evolução dos scores usando Pygame."""
+        graph_x = self.config.GAME_WIDTH + 20
+        graph_y = start_y
+        graph_width = self.config.UI_PANEL_WIDTH - 40
+        graph_height = 200
+        
+        # Área do gráfico
+        graph_rect = pygame.Rect(graph_x, graph_y, graph_width, graph_height)
+        pygame.draw.rect(self.screen, self.colors.GRAY, graph_rect, 1)
+        
+        title = self.fonts['small'].render("Evolução dos Scores", True, self.colors.WHITE)
+        title_rect = title.get_rect(center=(graph_rect.centerx, graph_y - 15))
+        self.screen.blit(title, title_rect)
+
+        if len(self.generation_scores) < 2:
+            return
+
+        max_score = max(self.generation_scores) if self.generation_scores else 1
+        points = []
+        for i, score in enumerate(self.generation_scores):
+            x = graph_x + (i / (len(self.generation_scores) - 1)) * graph_width
+            y = graph_y + graph_height - (score / max_score) * graph_height
+            points.append((x, y))
+
+        if len(points) > 1:
+            pygame.draw.lines(self.screen, self.colors.PLAYER, False, points, 2)
+        
+        for p in points:
+            pygame.draw.circle(self.screen, self.colors.WHITE, p, 3)
 
     def _draw_stats_on_panel(self):
         """Desenha as estatísticas e controles no painel lateral."""
@@ -455,10 +534,14 @@ class FlappyBirdAI:
         }
         stats = stats_map[self.game_state]()
         
+        last_y = stats_y
         for i, (stat, color) in enumerate(stats):
             if stat:
                 text = self.fonts['small'].render(stat, True, color)
                 self.screen.blit(text, (self.config.GAME_WIDTH + 10, stats_y + i * 20))
+                last_y = stats_y + i * 20
+        
+        return last_y + 20 # Retorna a posição Y final para posicionar o gráfico abaixo
 
     def _draw_bottom_panel_info(self):
         """Desenha as informações no painel inferior."""
@@ -616,6 +699,10 @@ class FlappyBirdAI:
             self.draw()
             self.clock.tick(60)
         
+        # Não precisa mais plotar no final, pois é feito em tempo real
+        # if self.game_state == GameState.TRAINING:
+        #     self.plot_progress()
+            
         pygame.quit()
 
 if __name__ == "__main__":

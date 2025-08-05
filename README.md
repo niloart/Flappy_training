@@ -101,3 +101,11 @@ A interface exibe a maioria dos controles, mas aqui está uma lista completa:
 - **`requirements.txt`**: Lista as bibliotecas Python necessárias para rodar o projeto.
 - **`best_flappy_brain.pkl`**: Arquivo gerado quando você salva a melhor IA. Ele armazena o estado da rede neural do melhor pássaro.
 - **`README.md`**: Este arquivo.
+
+### Integrantes do Grupo
+
+- João Pedro Noleto – RA: 363789
+- Danilo Almeida de Sousa – RA: 362639
+- Allan dos Santos – RA: 362388
+- Thiago Silva França – RA: 361249
+- Emerson Luis Saturnino  – RA: 362286

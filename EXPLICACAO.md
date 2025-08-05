@@ -66,10 +66,6 @@ Ao longo de centenas de gerações, esse processo de seleção e mutação gradu
 
 ---
 
-## Perguntas e Respostas sobre a Implementação
-
-Aqui estão as respostas diretas para as perguntas comuns sobre o design deste Algoritmo Genético:
-
 #### O que você está otimizando?
 
 Estamos otimizando a **estratégia de jogo** de um agente (o pássaro). O objetivo final é encontrar a configuração ideal para a rede neural do pássaro, permitindo que ele desvie dos canos de forma eficiente e, consequentemente, sobreviva o maior tempo possível.
