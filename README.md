@@ -114,4 +114,3 @@ A interface exibe a maioria dos controles, mas aqui está uma lista completa:
 - Danilo Almeida de Sousa – RA: 362639
 - Allan dos Santos – RA: 362388
 - Thiago Silva França – RA: 361249
-- Emerson Luis Saturnino  – RA: 362286
