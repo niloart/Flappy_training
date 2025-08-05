@@ -1,4 +1,4 @@
-# Flappy Bird com Evolução de IA
+# Flappy Bird com Algorítmo Genético
 
 Este projeto é uma implementação do clássico jogo Flappy Bird, com um foco especial em treinar uma Inteligência Artificial (IA) para jogar o jogo de forma autônoma usando um algoritmo genético e redes neurais. Além do modo de treinamento, é possível competir contra a melhor IA já treinada.
 
@@ -101,6 +101,10 @@ A interface exibe a maioria dos controles, mas aqui está uma lista completa:
 - **`requirements.txt`**: Lista as bibliotecas Python necessárias para rodar o projeto.
 - **`best_flappy_brain.pkl`**: Arquivo gerado quando você salva a melhor IA. Ele armazena o estado da rede neural do melhor pássaro.
 - **`README.md`**: Este arquivo.
+
+## Sobre o Projeto
+
+- Projeto de estudos da PosTech FIAP
 
 ### Integrantes do Grupo
 
